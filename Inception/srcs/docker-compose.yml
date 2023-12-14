@@ -1,0 +1,65 @@
+# Appel des Dockerfile
+version: '3.3'
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    image: inception/nginx
+    container_name: nginx
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    ports:
+     - 443:443
+    networks:
+      - inception
+    env_file:
+      - .env
+    restart: always
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: inception/wordpress
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+    volumes:
+      - wordpress_data:/var/www/html
+    
+    networks:
+      - inception
+    restart: always
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: inception/mariadb
+    container_name: mariadb
+    env_file:
+      - .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+  
+    networks:
+      - inception
+    restart: always
+
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      device: ${HOST_VOLUME_ROOT}/mariadb
+      type: volume
+      o: bind
+  wordpress_data:
+    driver: local
+    driver_opts:
+      device: ${HOST_VOLUME_ROOT}/wordpress
+      type: volume
+      o: bind
