@@ -6,7 +6,7 @@
 #    By: bberger <bberger@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/24 14:47:08 by bberger           #+#    #+#              #
-#    Updated: 2023/12/13 15:57:02 by bberger          ###   ########.fr        #
+#    Updated: 2023/12/14 14:57:07 by bberger          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,8 +27,13 @@ stop:
 
 start:
 	docker compose -f srcs/docker-compose.yml start
-
-
+	
+clear:
+	-if	[ "$$(docker ps -q)" ]; then docker stop $$(docker ps -qa); fi
+	-if	[ "$$(docker ps -qa)" ]; then docker rm $$(docker ps -qa); fi
+	-if	[ "$$(docker images -q)" ]; then docker rmi -f $$(docker images -qa); fi
+	-if	[ "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
+	-if	[ "$$(docker network ls -q)" ]; then docker network rm $$(docker network ls -q) 2>/dev/null; fi
 
 # include srcs/.env
 # export
